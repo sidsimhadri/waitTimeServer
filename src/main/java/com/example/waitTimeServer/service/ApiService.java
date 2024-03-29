@@ -1,34 +1,29 @@
 package com.example.waitTimeServer.service;
-import com.example.waitTimeServer.dto.LaunchClientRequest;
+import com.example.waitTimeServer.dto.ClientRequest;
 import com.example.waitTimeServer.model.ClientInstance;
 import com.example.waitTimeServer.model.Ping;
 import com.example.waitTimeServer.repository.ClientInstanceRepository;
 import com.example.waitTimeServer.repository.PingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@org.springframework.stereotype.Service
-public class Service {
+@Service
+public class ApiService {
 
     @Autowired
     private ClientInstanceRepository clientRepository;
     private PingRepository pingRepository;
 
-    public void registerClient(ClientInstance client) {
-        clientRepository.save(client);
-    }
     public List<Ping> findPingsByClientIdInRange(String clientId, LocalDateTime start, LocalDateTime end) {
         return pingRepository.findByClientIdInRange(clientId, start, end);
     }
     public List<ClientInstance> getAllClients() {
         return clientRepository.findAll();
-    }
-
-    public Optional<ClientInstance> getClientById(String id) {
-        return clientRepository.findById(id);
     }
 
     public Double currentData(String clientId) {
@@ -42,6 +37,26 @@ public class Service {
         return sum/pings.size();
     }
 
-    public String launchClientAndSave(LaunchClientRequest launchRequest) {
+
+    public String launchClient(ClientRequest launchRequest) {
+        String scriptPath = "/path/to/your/python/script.py"; // Path to  Python
+        String[] pythonCommand = {"python", scriptPath,
+                launchRequest.getType(), "mp4", launchRequest.getName()};
+
+        ProcessBuilder processBuilder = new ProcessBuilder(pythonCommand);
+
+        try {
+            Process process = processBuilder.start();
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                return "Python script started successfully.";
+            } else {
+                return "Failed to start Python script. Exit code: " + exitCode;
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "Failed to launch client: " + e.getMessage();
+        }
     }
+
 }

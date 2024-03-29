@@ -1,7 +1,5 @@
 package com.example.waitTimeServer.model;
-
-
-import lombok.Builder;
+import com.example.waitTimeServer.dto.PingRequest;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,7 +7,6 @@ import java.time.LocalDateTime;
 
 
 @Data
-@Builder
 @Document(collection = "pings")
 public class Ping {
 
@@ -18,4 +15,10 @@ public class Ping {
     private String clientId;
     private LocalDateTime timestamp;
     private Double value;
+
+    public Ping(PingRequest ping) {
+        this.clientId = ping.getClientId();
+        this.timestamp = LocalDateTime.now();
+        this.value = ping.getValue();
+    }
 }
