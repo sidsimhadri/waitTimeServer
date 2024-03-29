@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface PingRepository extends MongoRepository<ClientInstance, String> {
+public interface PingRepository extends MongoRepository<Ping, String> {
     @Query("{'clientId': ?0, 'timestamp': {$gte: ?1, $lte: ?2}}")
     List<Ping> findByClientIdInRange(String clientId, LocalDateTime start, LocalDateTime end);
 }

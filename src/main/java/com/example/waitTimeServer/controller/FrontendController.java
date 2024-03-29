@@ -1,7 +1,8 @@
 package com.example.waitTimeServer.controller;
-import com.example.waitTimeServer.dto.LaunchClientRequest;
+import com.example.waitTimeServer.dto.ClientRequest;
+import com.example.waitTimeServer.model.ClientInstance;
 import com.example.waitTimeServer.model.Ping;
-import com.example.waitTimeServer.service.Service;
+import com.example.waitTimeServer.service.ApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import java.util.List;
 public class FrontendController {
 
     @Autowired
-    private Service service;
+    private ApiService apiService;
 
     @GetMapping("/admin/{clientId}")
     public ResponseEntity<List<Ping>> getPingsByClientIdInRange(
@@ -23,13 +24,19 @@ public class FrontendController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
 
-        List<Ping> pings = service.findPingsByClientIdInRange(clientId, start, end);
+        List<Ping> pings = apiService.findPingsByClientIdInRange(clientId, start, end);
         return ResponseEntity.ok(pings);
     }
 
-    @GetMapping("/admin/{clientId}/current")
+    @GetMapping("/admin/clients")
+    public ResponseEntity<List<ClientInstance>> refreshClients() {
+        List<ClientInstance> activeClients = apiService.getAllClients();
+        return ResponseEntity.ok(activeClients);
+    }
+
+    @GetMapping("/user/{clientId}/current")
     public ResponseEntity<Double> getCurrentData(@PathVariable String clientId) {
-        Double average = service.currentData(clientId);
+        Double average = apiService.currentData(clientId);
         if (average != null) {
             return ResponseEntity.ok(average);
         } else {
@@ -38,8 +45,8 @@ public class FrontendController {
     }
 
     @GetMapping("/admin/launch")
-    public ResponseEntity<String> launchClient(@PathVariable LaunchClientRequest launchRequest) {
-        String id = service.launchClientAndSave(launchRequest);
+    public ResponseEntity<String> launchClient(@PathVariable ClientRequest launchRequest) {
+        String id = apiService.launchClient(launchRequest);
         if (id != null) {
             return ResponseEntity.ok(id);
         } else {
