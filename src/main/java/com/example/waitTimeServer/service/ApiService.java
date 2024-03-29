@@ -17,6 +17,7 @@ public class ApiService {
 
     @Autowired
     private ClientInstanceRepository clientRepository;
+    @Autowired
     private PingRepository pingRepository;
 
     public List<Ping> findPingsByClientIdInRange(String clientId, LocalDateTime start, LocalDateTime end) {
@@ -39,9 +40,8 @@ public class ApiService {
 
 
     public String launchClient(ClientRequest launchRequest) {
-        String scriptPath = "/path/to/your/python/script.py"; // Path to  Python
-        String[] pythonCommand = {"python", scriptPath,
-                launchRequest.getType(), "mp4", launchRequest.getName()};
+        String scriptPath = "../videoEdge/main.py";
+        String[] pythonCommand = {"python", scriptPath, launchRequest.getType(), "mp4", launchRequest.getName()};
 
         ProcessBuilder processBuilder = new ProcessBuilder(pythonCommand);
 
