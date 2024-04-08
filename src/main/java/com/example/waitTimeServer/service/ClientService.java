@@ -8,6 +8,8 @@ import com.example.waitTimeServer.repository.PingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ClientService {
     @Autowired
@@ -21,6 +23,13 @@ public class ClientService {
     }
 
     public Ping logPing(PingRequest pingRequest) {
-        return pingRepository.save(new Ping(pingRequest));
+        Optional<ClientInstance> maybeClient = this.clientRepository.findById(pingRequest.getClientId());
+        Ping newPing = new Ping(pingRequest);
+        if(maybeClient.isPresent()){
+            ClientInstance client = maybeClient.get();
+            client.setLastPing(newPing);
+            this.clientRepository.save(client);
+        }
+        return pingRepository.save(newPing);
     }
 }

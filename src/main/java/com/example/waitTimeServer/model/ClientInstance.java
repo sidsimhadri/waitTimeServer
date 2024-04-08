@@ -2,11 +2,13 @@ package com.example.waitTimeServer.model;
 import com.example.waitTimeServer.dto.ClientRequest;
 import lombok.Data;
 import lombok.NoArgsConstructor; // Import Lombok's NoArgsConstructor
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @NoArgsConstructor
+@Setter
 @Document(collection = "clients")
 public class ClientInstance {
     @Id
@@ -17,6 +19,8 @@ public class ClientInstance {
     private String type;
 
     private String configuration;
+
+    private Ping lastPing;
     public void initializeFromClientRequest(ClientRequest registrationRequest) {
         this.name = registrationRequest.getName();
         this.type = registrationRequest.getType();
@@ -26,4 +30,5 @@ public class ClientInstance {
         this.id = id;
         initializeFromClientRequest(registrationRequest);
     }
+
 }

@@ -2,6 +2,7 @@ package com.example.waitTimeServer.controller;
 import com.example.waitTimeServer.dto.ClientRequest;
 import com.example.waitTimeServer.model.ClientInstance;
 import com.example.waitTimeServer.model.Ping;
+import com.example.waitTimeServer.model.WeeklyHourlyBin;
 import com.example.waitTimeServer.service.ApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,16 +18,16 @@ public class FrontendController {
 
     @Autowired
     private ApiService apiService;
-
     @GetMapping("/admin/{clientId}")
-    public ResponseEntity<List<Ping>> getPingsByClientIdInRange(
+    public ResponseEntity<List<Ping>> getPingsByClientId(
             @PathVariable String clientId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
 
         List<Ping> pings = apiService.findPingsByClientIdInRange(clientId, start, end);
         return ResponseEntity.ok(pings);
     }
+
 
     @GetMapping("/admin/clients")
     public ResponseEntity<List<ClientInstance>> refreshClients() {
@@ -52,5 +53,11 @@ public class FrontendController {
         } else {
             return ResponseEntity.noContent().build();
         }
+    }
+
+    @GetMapping("/{clientId}/daily-bins")
+    public ResponseEntity<List<WeeklyHourlyBin>> getWeeklyHourlyBins(@PathVariable String clientId) {
+        List<WeeklyHourlyBin> bins = apiService.getPingsGroupedByDayOfWeekAndHour(clientId);
+        return ResponseEntity.ok(bins);
     }
 }

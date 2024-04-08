@@ -13,4 +13,5 @@ import java.util.List;
 public interface PingRepository extends MongoRepository<Ping, String> {
     @Query("{'clientId': ?0, 'timestamp': {$gte: ?1, $lte: ?2}}")
     List<Ping> findByClientIdInRange(String clientId, LocalDateTime start, LocalDateTime end);
+    List<Ping> findByClientId(String clientId);
 }

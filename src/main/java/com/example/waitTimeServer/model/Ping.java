@@ -1,12 +1,14 @@
 package com.example.waitTimeServer.model;
 import com.example.waitTimeServer.dto.PingRequest;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
 
 @Data
+@NoArgsConstructor
 @Document(collection = "pings")
 public class Ping {
 
